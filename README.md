@@ -1,4 +1,4 @@
-# 🎀 🐈  PINKY PROMISE - your favorite coquette trinket shop  🐈 🎀
+# 🎀 🐈  PINKY PROMISE SHOP!!  🐈 🎀
 
 ### 1. HOW I IMPLEMENTED THE CHECKLISTS
 
@@ -40,8 +40,9 @@ and connected it with my github repository with the command
  ALLOWED_HOSTS = ["localhost", "127.0.0.1"] 
 ```
  for some deployment needs.
+ 
  9. Then I ran the django server with the command python3 manage.py runserver
- 10. I also made sure that the django application has been created successfully using the link http://localhost:8000 
+ 10. I also made sure that the django application has been created successfully using the link http://localhost:8000
  11. Then I added a gitignore file which is a configuration file used in the Git repository to specify the files and directories that should be ignored by Git.
  12. Then I did the usual add commit push commands to push any changes from the directory
 #### B. CREATING AN APPLICATION NAMED "MAIN" IN THE PROJECT
