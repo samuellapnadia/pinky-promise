@@ -72,9 +72,9 @@ I created urls.py in the main director and filled it with. This will be responsi
 #### E. CREATE FUNCTION VIEWS.PY
  1. I integrated the mvt components with a few steps. 
  2. firstly I created a views.py file in the main application file and filled it as follows 
+ ```
  from django.shortcuts import render
-```
-def show_main(request):
+ def show_main(request):
     context = {
         'name': 'Samuella Putri Nadia Pauntu',
         'store_name': 'PINKY PROMISE',
