@@ -127,12 +127,21 @@ git push pws main:master
 9. After doing all of the steps, I did some checking to the building status of the PWS deployment (wether its still being built or its successfully built). I did that in order to check wether I made any mistakes during the deployment steps and to fix any errors if any.
 
 
-### 2. DIAGRAM
+### 2. DIAGRAM THAT CONTAINS REQUEST CLIENT TO A DJANGO-BASED APPLICATION AND THE RESPONSE IT GIVES. 
 ![DIAGRAM](diagram.png)
 
 
+When a user makes a request by visiting a specific URL, Django first checks the urls.py file to find a matching route for that URL. Once match is found, it directs the request to the corresponding view function in views.py. The view function contains the business logic and often interacts with the data models, which are defined in models.py, to retrieve or modify information from the database. After gathering the necessary data, the view function passes it to an HTML template, where the data is rendered and formatted for display. The HTML file, located in the templates folder, then dynamically presents the data and is returned as a response to the user's browser, completing the request-response cycle. 
+
 ### 3. USAGE OF GIT IN SOFTWARE DEVELOPMENT
- GIT itself is a DevOps tool that is used for source-code management. GIT is used for software development since its branches are easy to merge and cheap as well. This also facilitates the feature branch workflow in which these feature branches provide an isolated environment for every change to the codebase. 
+ GIT itself is a powerful tool widely used for source code management. It plays a crucial role in software development due to its efficient branching system, where branches are both easy to merge and lightweight. This enables the use of a feature branch workflow, which provides an isolated environment for each change made to the codebase. This workflow allows developers to work on new features, bug fixes, or experiments without affecting the main codebase until the changes are thoroughly tested and reviewed.
 ### 4. WHY IS DJANGO USED AS A STARTING POINT FOR LEARNING SOFTWARE DEVELOPMENT
- Based on my personal experience, I felt like Django is an easy to use web framework. Django also allows us to write our desired app without having to reinvent the wheel since Django takes care of much of the web development hassle
+ Based on my personal experience, I felt like Django is an easy to use web framework. Django also allows us to write our desired app without having to reinvent the wheel since Django takes care of much of the web development hassle. Here's a further explanation on some advantages of using Django as a starting point for lewarning software development.
+ #### 1. Comprehensive Framework: 
+ Django is a full-stack web framework, providing verything needed to develop web applications. This includes URL routing, database management, user authentication, and form handling. This makes django very beginner friendly to those wanting to learn core concepts without having to build everything from scratch
+ #### 2. Real-world Application: 
+ Learning Django equips beginners with skills we can use in real-world projects, since many professional web-appliations are built using Django.
 ### 5. WHY IS THE DJANGO MODEL CALLED ORM
+ Django's ORM provides a way to interact with the database using Python code through models, abstracting away the underlying SQL queries, making it easier to work with databases in an object-oriented fashion. Django's model itself is called ORM due to a few reasons.
+ 1. Object-Relational Mapping: It maps Python objects (like classes) to relational database tables, creating a bridge between the two different paradigms: the object-oriented world and the relational database world.
+ 2. Model: In Django, each database table is represented by a model. This model is a Python class that defines the structure of the table, including the fields and methods (which can encapsulate behavior related to that table).
