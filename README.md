@@ -133,7 +133,7 @@ git branch -M main
 ```
 git push pws main:master
 ```
-9. After doing all of the steps, I did some checking to the building status of the PWS deployment (wether its still being built or its successfully built). I did that in order to check wether I made any mistakes during the deployment steps and to fix any errors if any.
+9. After doing all of the steps, I did some checking to the building status of the PWS deployment (whether its still being built or its successfully built). I did that in order to check wether I made any mistakes during the deployment steps and to fix any errors if any.
 
 
 ### 2. DIAGRAM THAT CONTAINS REQUEST CLIENT TO A DJANGO-BASED APPLICATION AND THE RESPONSE IT GIVES. 
