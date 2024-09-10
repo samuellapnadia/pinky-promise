@@ -71,6 +71,7 @@ I created urls.py in the main director and filled it with. This will be responsi
  python3 manage.py makemigrations 
  ```
  to make model migrations
+ 
  4. after that, i ran 
  ```
  python3 manage.py migrate 
