@@ -1,5 +1,7 @@
 # 🎀 🐈  PINKY PROMISE SHOP!!  🐈 🎀
 
+
+* [LINK TO PINKY PROMISE'S PWS APP](https://samuella-putri-pinkypromise.pbp.cs.ui.ac.id/)
 ### 1. HOW I IMPLEMENTED THE CHECKLISTS
 
 
