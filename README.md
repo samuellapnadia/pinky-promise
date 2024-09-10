@@ -128,6 +128,9 @@ git push pws main:master
 
 
 ### 2. DIAGRAM
+![DIAGRAM](diagram.png)
+
+
 ### 3. USAGE OF GIT IN SOFTWARE DEVELOPMENT
  GIT itself is a DevOps tool that is used for source-code management. GIT is used for software development since its branches are easy to merge and cheap as well. This also facilitates the feature branch workflow in which these feature branches provide an isolated environment for every change to the codebase. 
 ### 4. WHY IS DJANGO USED AS A STARTING POINT FOR LEARNING SOFTWARE DEVELOPMENT
