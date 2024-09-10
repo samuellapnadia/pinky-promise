@@ -55,8 +55,8 @@ I created urls.py in the main director and filled it with. This will be responsi
  1. I modified the models.py file located in the main directory to store a few attributes. The attributes are as follows: 
 ```
  from django.db import models
-
-class Product(models.Model):
+ 
+ class Product(models.Model):
     name = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
