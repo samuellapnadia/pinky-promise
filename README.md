@@ -66,8 +66,16 @@ I created urls.py in the main director and filled it with. This will be responsi
         return self.name
 ```
  2. After that, I did the steps to make & apply model migrations  
- 3. first of all, I ran python3 manage.py makemigrations to make model migrations
- 4. after that, i ran python3 manage.py migrate to apply migrations to the local database
+ 3. first of all, I ran 
+ ```
+ python3 manage.py makemigrations 
+ ```
+ to make model migrations
+ 4. after that, i ran 
+ ```
+ python3 manage.py migrate 
+ ```
+ to apply migrations to the local database
 
 #### E. CREATE FUNCTION VIEWS.PY
  1. I integrated the mvt components with a few steps. 
