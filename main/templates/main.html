@@ -1,9 +1,40 @@
-<h1>HI! Welcome to {{ store_name }}!!!</h1>
+{% extends 'base.html' %}
+{% block content %}
+<h1>Hi!! Welcome to {{ store_name }}</h1>
 
-
-<h2>Name</h2>
+<h5>Name:</h5>
 <p>{{ name }}</p>
 
-<h2>Class</h2>
+<h5>Class:</h5>
 <p>{{ class }}</p>
 
+{% if not product_entries %}
+<p>There are currently no product in stock yet. Please pre-order by clicking the add new product below.</p>
+{% else %}
+<table>
+  <tr>
+    <th>Product Name</th>
+    <th>Price</th>
+    <th>Description</th>
+    <th>Coquetteness</th>
+  </tr>
+
+  {% comment %} This is how to display mood data
+  {% endcomment %} 
+  {% for product_entry in product_entries %}
+  <tr>
+    <td>{{product_entry.name}}</td>
+    <td>{{product_entry.price}}</td>
+    <td>{{product_entry.description}}</td>
+    <td>{{product_entry.coquetteness}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<br />
+
+<a href="{% url 'main:create_product_entry' %}">
+  <button>Add New Product Entry</button>
+</a>
+{% endblock content %}
