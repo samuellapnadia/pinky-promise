@@ -170,3 +170,211 @@ The correct and proper delivery mechanisms ensure that the data remains accurate
 #### User Experience:
 Fast and reliable data delivery directly impacts the user experience. If data is delayed or delivered inefficiently, users may experience lag, slow loading times, or incomplete content, which can lead to frustration and a negative perception of the platform.
 
+
+### 2. XML VS JSON, WHICH ONE IS BETTER?
+The main difference between XML and JSON lies in their structure and syntax. JSON is built on key-value pairs, while XML relies on end tags. Structurally, XML tends to be more complex than JSON because it offers a more intricate representation of attributes. JSON, however, is more widely used due to its simpler, more flexible format for data exchange. Additionally, JSON is better supported by modern programming languages and software systems, making it a more popular choice than XML.
+
+### 3. FUNCTIONAL USAGE OF is_valid() METHOD IN DJANGO FORMS
+The purpose of is_valid() is to validate each field in a form. It returns True if all fields pass the validation rules and False if any field fails. Additionally, is_valid() helps with error handling by providing a list of error messages, which can be accessed via the form.errors attribute.
+
+The is_valid() method is valuable in forms for several reasons. Here are some key benefits:
+
+#### Data Integrity 
+is_valid() ensures that only correctly formatted and valid data is processed through the form, protecting the application from invalid or harmful input and preserving data integrity.
+
+#### Error Feedback 
+is_valid() enables developers to offer users clear error messages when invalid data is entered, enhancing the overall user experience.
+
+
+### 4. WHY DO WE NEED csrf_token WHEN CREATING A FORM IN DJANGO
+Django generates a unique CSRF token for when a user is authenticated an surfing a web. This token is used to verify that the request is coming from the authenticated user and not from a malicious source. CSRF's protection is mainly focusing on protecting against actions that make changes in data. 
+
+When CSRF is not used, the application becomes vulnerable to the CSRF attacks themselves. Any form submission can be spoofed by any attacker, leading to unauthorized actions on behalf of the user.
+
+Attackers could leverage this through a few forms:
+#### Force Unwanted Actions: 
+An attacker could create a form on another website that, once submitted by the victim (unknowingly), sends a request to the targeted Django application. This request would seem valid to the server because it comes from an authenticated user, but the form's action could lead to unintended consequences, such as modifying user settings, deleting an account, or transferring funds.
+
+#### Bypass Authentication:
+If a user is logged in and the attacker knows the URLs and activities expected by the server, the attacker can use CSRF attacks to perform actions that users would typically authenticate for, such as passwords. 
+
+#### Hijacking User Sessions:
+Attacker can make attacks using the user's sessions, meaning, they can perform any action the user has permission for. They can perform malicious actions without the user noticing them. 
+
+### 5. HOW I IMPLEMENTED THE CHECKLISTS
+#### A. Create a form input to add a model object to the previous app.
+1. I created a new file forms.py in the main directory to create the structure of the form which will be recieving the data entries of the pre-ordered items in Pinky Promise.
+ ```
+from django.forms import ModelForm
+from main.models import Product
+
+class ProductEntryForm(ModelForm):
+    class Meta:
+        model = Product
+        fields = ["name", "description", "price", "coquetteness"]
+ ```
+
+2. Then i accessed the views.py file in the main directory to add some imports and also make a function create_product_entry which will be receiving the product entries 
+```
+from django.shortcuts import render, redirect 
+from main.forms import ProductEntryForm
+from main.models import Product
+```
+```
+...
+def create_product_entry(request):
+    form = ProductEntryForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return redirect('main:show_main')
+
+    context = {'form': form}
+    return render(request, "create_product_entry.html", context)
+```
+
+3. I changed the show_main function by adding Product.objects.all() which will retrieve all objects of the Product objects stored in the database
+
+```
+def show_main(request):
+    product_entries = Product.objects.all() # added this
+    context = {
+        'name': 'Samuella Putri Nadia Pauntu',
+        'store_name': 'PINKY PROMISE',
+        'class': 'PBP KKI',
+        'product_entries': product_entries # added this
+    }
+    return render(request, 'main.html', context)
+```
+
+4. After that I moved to urls.py in the main directory to import the create_product_entry function that I just created. 
+
+```
+from main.views import show_main, create_product_entry
+```
+
+5. I also added the url path to urlpatterns in the same file 
+```
+urlpatterns = [
+   ...
+   path('create-product-entry', create_product_entry, name='create_product_entry'),
+]
+```
+
+6. I created a new HTML file with the name create_product_entry.html (which will be used to add the new product entry) in the main/templates directory with its contents as follows:
+```
+{% extends 'base.html' %} 
+{% block content %}
+<h1>Add New Product Entry</h1>
+
+<form method="POST">
+  {% csrf_token %}
+  <table>
+    {{ form.as_table }}
+    <tr>
+      <td></td>
+      <td>
+        <input type="submit" value="Add Product Entry" />
+      </td>
+    </tr>
+  </table>
+</form>
+
+{% endblock %}
+```
+
+7. Then, I fixed the main.html file and use the {% block content %} block to present the form data in a table format, along with an "Add Product Entry" button that will navigate to the form page.
+```
+{% extends 'base.html' %}
+{% block content %}
+<h1>Hi!! Welcome to {{ store_name }}</h1>
+
+<h5>Name:</h5>
+<p>{{ name }}</p>
+
+<h5>Class:</h5>
+<p>{{ class }}</p>
+
+{% if not product_entries %}
+<p>There are currently no product in stock yet. Please pre-order by clicking the add new product below.</p>
+{% else %}
+<table>
+  <tr>
+    <th>Product Name</th>
+    <th>Price</th>
+    <th>Description</th>
+    <th>Coquetteness</th>
+  </tr>
+
+  {% comment %} This is how to display mood data
+  {% endcomment %} 
+  {% for product_entry in product_entries %}
+  <tr>
+    <td>{{product_entry.name}}</td>
+    <td>{{product_entry.price}}</td>
+    <td>{{product_entry.description}}</td>
+    <td>{{product_entry.coquetteness}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+<br />
+
+<a href="{% url 'main:create_product_entry' %}">
+  <button>Add New Product Entry</button>
+</a>
+{% endblock content %}
+```
+#### B. Add 4 views to view the added objects in XML, JSON, XML by ID, and JSON by ID formats.
+1. First I added some imports to the views.py file
+```
+from django.http import HttpResponse
+from django.core import serializers
+```
+
+2. Next, I created four functions that take 'request' as a parameter and define a variable within each function to store the result of querying all the data from Product. This will allow us to view the added entries/objects in XML, JSON, XML by ID, and JSON by ID.
+
+``` 
+def show_xml(request):
+    data = Product.objects.all()
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json(request):
+    data = Product.objects.all()
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+def show_xml_by_id(request, id):
+    data = Product.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json_by_id(request, id):
+    data = Product.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+```
+
+#### C. Create URL routing for each of the views added in point 2.
+
+1. I import the functions to the urls.py file
+```
+from main.views import show_main, create_mood_entry, show_xml, show_json, show_xml_by_id, show_json_by_id
+```
+
+2. Then, I included the URL path in the urlpatterns variable within the urls.py file located in the main directory, which will be allowing access to the functions that I created previously.
+```
+urlpatterns = [
+    path('', show_main, name='show_main'),
+    path('create-product-entry', create_product_entry, name='create_product_entry'), 
+    path('xml/', show_xml, name='show_xml'), # this line
+    path('json/', show_json, name='show_json'),  # this line
+    path('xml/<str:id>/', show_xml_by_id, name='show_xml_by_id'),  # this line
+    path('json/<str:id>/', show_json_by_id, name='show_json_by_id'),  # this line
+
+]
+```
+
+### SCREENSHOT OF POSTMAN
+![JSON](JSON.png)
+![JSON by ID](JSONID.png)
+![XML](XML.png)
+![XML by ID](XMLID.png)
