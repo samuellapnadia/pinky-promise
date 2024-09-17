@@ -374,7 +374,11 @@ urlpatterns = [
 ```
 
 ### SCREENSHOT OF POSTMAN
+JSON
 ![JSON](JSON.png)
+JSON by ID
 ![JSON by ID](JSONID.png)
+XML
 ![XML](XML.png)
+XML by ID
 ![XML by ID](XMLID.png)
