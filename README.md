@@ -2,6 +2,8 @@
 
 
 ## [LINK TO PINKY PROMISE'S PWS APP](https://samuella-putri-pinkypromise.pbp.cs.ui.ac.id/)
+
+# ASSIGNMENT 2
 ### 1. HOW I IMPLEMENTED THE CHECKLISTS
 
 
@@ -156,3 +158,15 @@ When a user makes a request by visiting a specific URL, Django first checks the 
  It maps Python objects (like classes) to relational database tables, creating a bridge between the two different paradigms: the object-oriented world and the relational database world.
  #### 2. Model: 
  In Django, each database table is represented by a model. This model is a Python class that defines the structure of the table, including the fields and methods (which can encapsulate behavior related to that table).
+
+
+# ASSIGNMENT 3
+### 1. WHY WE NEED DATA DELIVERY IN IMPLEMENTING A PLATFORM
+Data delivery is something that is considered essential in any data-driven organisation. Here are a few key reasons why data delivery is important:
+#### Security:
+In terms of security, it secures data delivery protocols, such as encryption during transmission, ensure that sensitive information is protected from interception or attacks, especially when dealing with personal or financial data.
+#### Data Integrity: 
+The correct and proper delivery mechanisms ensure that the data remains accurate and complete from the source to the destination. This is critical for applications that rely on precise data, such as healthcare platforms, e-commerce transactions, or data analytics tools.
+#### User Experience:
+Fast and reliable data delivery directly impacts the user experience. If data is delayed or delivered inefficiently, users may experience lag, slow loading times, or incomplete content, which can lead to frustration and a negative perception of the platform.
+
