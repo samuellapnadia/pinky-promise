@@ -653,7 +653,10 @@ def show_main(request):
 
 ```
 ####  Make two user accounts with three dummy data each, using the model made in the application beforehand so that each data can be accessed by each account locally.
-1. To do this, firstly I accessed http://localhost:8000/ by running python3 manage.py runserver
+1. To do this, firstly I accessed http://localhost:8000/ by running 
+```
+python3 manage.py runserver
+```
 2. Then I registered one new account
 3. Once registered, there are no product entries so I added 3 product entries to that user with specifications for name, price, coquetteness and description
 4. I logged-out and did all the same steps for one more account then logged-out again
@@ -721,6 +724,7 @@ if form.is_valid():
 'last_login': request.COOKIES['last_login']
 ```
 This will ad the last_login cookie information to the response and this will be displayed in the web page.
+
 4. I modified the logout_user function to the following:
 ```
 def logout_user(request):
