@@ -489,3 +489,250 @@ Not all cookies are equally safe, and certain precautions are required when usin
 2. HttpOnly Cookies: Prevent access via JavaScript, reducing XSS risks.
 3. SameSite Cookies: Help prevent CSRF attacks by limiting cross-site requests.
 4. Third-Party Cookies: Often used for tracking, raising privacy concerns and are blocked by many browsers.
+
+### 5. HOW I IMPLEMENTED THE CHECKLISTS
+####  Implement the register, login, and logout functions so that the user can access the application freely.
+1. Firstly, I activated my virtual environment
+2. Next I added a few imports to my views.py file and added a register function which will automatically generate the registration form and will be used to create a user account
+```
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+...
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+```
+3. Then i opened the main/templates directory and added a new file "register.html" with contents as follows:
+```
+{% extends 'base.html' %} {% block meta %}
+<title>Register</title>
+{% endblock meta %} {% block content %}
+
+<div class="login">
+  <h1>Register</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input type="submit" name="submit" value="Register" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+
+{% endblock content %}
+```
+4. After that, I did the routing by adding the register function to urls.py and added a URL path to urlpatterns to access the imported function.
+```
+from main.views import register
+...
+ urlpatterns = [
+     ...
+     path('register/', register, name='register'),
+     ...
+ ]
+ ```
+ 5. Before creating the Login function, i added a few imports to the views.py file then added the login function afterwards
+ ```
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate, login
+...
+def login_user(request):
+   if request.method == 'POST':
+      form = AuthenticationForm(data=request.POST)
+
+      if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('main:show_main')
+
+   else:
+      form = AuthenticationForm(request)
+   context = {'form': form}
+   return render(request, 'login.html', context)
+ ```
+ 6. Then I created a new HTML file with name "login.html" at the main/templates directory with content as follows:
+ ```
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Login</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="login">
+  <h1>Login</h1>
+
+  <form method="POST" action="">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input class="btn login_btn" type="submit" value="Login" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %} Don't have an account yet?
+  <a href="{% url 'main:register' %}">Register Now</a>
+</div>
+
+{% endblock content %}
+```
+7. Then I did the routing as usual by importing the login function to urls.py and added the url path
+```
+from main.views import login_user
+...
+urlpatterns = [
+   ...
+   path('login/', login_user, name='login'),
+]
+```
+8. To implement the logout function, I started by adding a few imports to my views.py file and then add the logout function
+```
+from django.contrib.auth import logout
+...
+def logout_user(request):
+    logout(request)
+    return redirect('main:login')
+
+```
+9. Then I opened the main.html file and added this line after the "Add New Product Entry" hyperlink tag:
+```
+...
+<a href="{% url 'main:logout' %}">
+  <button>Logout</button>
+</a>
+...
+```
+10. Then I did the routing by importing the function to urls.py and added the url path
+```
+from main.views import logout_user
+...
+urlpatterns = [
+   ...
+   path('logout/', logout_user, name='logout'),
+]
+```
+11. Then, I restricted the access to the main page by adding a login_required import in views.py
+```
+from django.contrib.auth.decorators import login_required
+```
+12. Then i added this code snippet so that the main page can only be accessed by users that have logged-in.
+```
+...
+@login_required(login_url='/login')
+def show_main(request):
+...
+
+```
+####  Make two user accounts with three dummy data each, using the model made in the application beforehand so that each data can be accessed by each account locally.
+1. To do this, firstly I accessed http://localhost:8000/ by running python3 manage.py runserver
+2. Then I registered one new account
+3. Once registered, there are no product entries so I added 3 product entries to that user with specifications for name, price, coquetteness and description
+4. I logged-out and did all the same steps for one more account then logged-out again
+
+#### Connect the models Product and User.
+1. First, I imported User to models.py
+```
+from django.contrib.auth.models import User
+```
+2. Then I added this following code to my Product model:
+```
+class Product(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+```
+3. After that, I modified the show_main function in views.py to the following:
+```
+def show_main(request):
+    product_entries = Product.objects.filter(user=request.user)
+    context = {
+        'name': request.user.username,
+        'store_name': 'PINKY PROMISE',
+        'class': 'PBP KKI',
+        'product_entries': product_entries , 
+    }
+    return render(request, 'main.html', context)
+
+```
+This will display the Product objects associated with the logged-in user
+
+4. Then I ran this command to ran model migration :
+```
+python3 manage.py makemigrations
+```
+5. And then applied migration with the following command:
+```
+python3 manage.py migrate
+```
+6. Then I imported OS and changed the variable DEBUG in settings.py in the pinky-promise subdirectory to ensure my project is ready for a production environtment
+```
+import os
+...
+PRODUCTION = os.getenv("PRODUCTION", False)
+DEBUG = not PRODUCTION
+```
+#### Display logged in user details such as username and apply cookies like last login to the application's main page.
+1. First I added a few imports to views.py
+```
+import datetime
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+```
+2. Next, I added the functionality to set a cookie named last_login to track when the user last logged in by fixing this code to if form.is_valid() block in the login_user function:
+```
+...
+if form.is_valid():
+    user = form.get_user()
+    login(request, user)
+    response = HttpResponseRedirect(reverse("main:show_main"))
+    response.set_cookie('last_login', str(datetime.datetime.now()))
+    return response
+...
+```
+3. Then I added this code snippet in the show_main function
+```
+'last_login': request.COOKIES['last_login']
+```
+This will ad the last_login cookie information to the response and this will be displayed in the web page.
+4. I modified the logout_user function to the following:
+```
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
+```
+5. Then I added the following code snippet to main.html (under the logout button) to display lastlogin data
+
+```
+...
+<h5>Last login session: {{ last_login }}</h5>
+...
+```
