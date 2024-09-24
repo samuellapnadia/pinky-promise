@@ -382,3 +382,110 @@ XML
 ![XML](XML.png)
 XML by ID
 ![XML by ID](XMLID.png)
+
+# ASSIGNMENT 4
+### 1. DIFFERENCE BETWEEN HttpResponseRedirect() and redirect()?
+#### HttpResponseRedirect() :
+This is used to redirect the user to a specified URL. To use this, we provide the target URL as a parameter
+#### redirect() :
+This is a shortcut function that provides a simpler and more flexible way to perform redirects. It can accept not only a URL string but also a view name or an object.
+
+### 2. EXPLAIN HOW PRODUCT IS LINKED WITH USER!
+To link Product with User, we need to establish a Foreign key relationship. This allows each Product to be associated with a specific user, making it possible to track which user created each product entry. Here are the steps to implement it :
+1. Importing the user model in models.py :
+```
+from django.contrib.auth.models import User
+```
+2.  Define the Product model with a ForeignKey to User :
+```
+class Product(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+```
+3. Using the Relationship in views.py
+```
+from django.shortcuts import render
+from main.models import Product
+def show_main(request):
+    product_entries = Product.objects.filter(user=request.user)
+    context = {
+        'name': request.user.username,
+        ...
+        'product_entries': product_entries , 
+        ...
+    }
+    return render(request, 'main.html', context)
+```
+4. Accessing the User in Templates:
+```
+  {% for product_entry in product_entries %}
+  <tr>
+    <td>{{product_entry.name}}</td>
+    <td>{{product_entry.price}}</td>
+    <td>{{product_entry.description}}</td>
+    <td>{{product_entry.coquetteness}}</td>
+  </tr>
+  {% endfor %}
+</table>
+```
+
+### 3. DIFFERENCE BETWEEN AUTHENTICATION & AUTHORIZATION, WHAT HAPPENS WHEN A USER LOGS IN?
+Authentication: verifies a user who they claim to be. The identity of the users are checked in order to provide access to the system. 
+Authorization: determines what an authorized user is allowed to do. In this process, the user's authorities are being checked to access the resources.
+
+#### What happens when a user logs in
+1. Users enters the username and password (providing credentials)
+2. Authentication occurs when the system checks the validity of the credentials against the stored data (The system will deny if credentials don't match and will accept if credentials match)
+3. Once logged in, a session is created on the server and a session cookie is sent to the client. This session identifies the user on subsequent requests without requiring them to log in again.
+4. Django stores information about the logged-in user in the session, allowing the system to know which user is making the requests.
+
+#### How Django implements authentication 
+Django provides built-in tools for managing authentication via its "django.contrib.auth" module. Django provides a default login view that handles authenticating users.
+
+```
+from django.contrib.auth import authenticate, login,
+
+def login_user(request):
+   if request.method == 'POST':
+      form = AuthenticationForm(data=request.POST)
+
+      if form.is_valid():
+          user = form.get_user()
+          login(request, user)
+          response = HttpResponseRedirect(reverse("main:show_main"))
+          response.set_cookie('last_login', str(datetime.datetime.now()))
+          return response
+   else:
+      form = AuthenticationForm(request)
+   context = {'form': form}
+   return render(request, 'login.html', context)
+
+```
+After successful authentication, Django uses sessions to keep track of the logged-in user by storing a session cookie in the user's browser. The logout() function ends the session and removes the authentication cookie as well as logging the user out.
+
+#### How Django implements authorization
+Once a user is authenticated, Django uses permissions and groups to handle authorization. Each model in Django can have associated permissions, in which these permissions are automatically created when we define models 
+
+```
+@login_required(login_url='/login')
+def show_main(request):
+    product_entries = Product.objects.filter(user=request.user)
+    ...
+```
+In this part of the code, "@login_required" ensures only logged users are allowed to access show_main view
+
+### 4. HOW DOES DJANGO REMEMBER LOGGED IN USERS?
+1. Once a user logs in, a session is created by the server to keep track of the user's authenticated state. 
+2. Django stores a session ID in a cookie on the user's browser. The session ID in the cookie links its users browser to the session data stored on the server
+3. Django stores user-specific information, such as the user's ID and other session-related data, on the server sid. On each request, Django reads the session ID from the cookie, retrieves the corresponding session data from the server, and associates it with the user making the request.
+
+#### Other use of cookies
+1. Persistent Logins: Cookies can store login information to keep users logged in between sessions
+2. Preferences: Cookies can be used to store user preferences such as language settings, themes, or other personalized configurations.
+3. Shopping Carts: Cookies can be used to store temporary shopping cart information in e-commerce sites, allowing users to resume their shopping session.
+
+#### Are All Cookies Safe to Use?
+Not all cookies are equally safe, and certain precautions are required when using cookies. Here are a few examples:
+1. Secure Cookies: Should only be sent over HTTPS to avoid interception.
+2. HttpOnly Cookies: Prevent access via JavaScript, reducing XSS risks.
+3. SameSite Cookies: Help prevent CSRF attacks by limiting cross-site requests.
+4. Third-Party Cookies: Often used for tracking, raising privacy concerns and are blocked by many browsers.
