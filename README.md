@@ -757,7 +757,7 @@ Responsive design reduces the amount of data and code that needs to be loaded an
 
 APPLICATIONS THAT HAVE IMPLEMENTED RESPONSIVE DESIGN:
 - GitHub: This website offers a consistent experience across every device. 
-- DropBox: his website's layout adapts to the user's device, providing a seamless experience across devices. For example, the mobile app simplifies common tasks, while the desktop experience is improved with improvements to Windows Explorer, macOS Finder, and the taskbar/menu bar
+- DropBox: This website's layout adapts to the user's device, providing a seamless experience across devices. For example, the mobile app simplifies common tasks, while the desktop experience is improved with improvements to Windows Explorer, macOS Finder, and the taskbar/menu bar
 
 APPLICATIONS THAT HAVE NOT IMPLEMENTED RESPONSIVE DESIGN:
 - Older Government Websites:  Some older government websites, such as certain local administrative portals, have not adopted responsive design. On mobile devices, these websites can be hard to navigate, with small text, misaligned elements, and non-functional features.
