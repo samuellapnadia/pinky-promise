@@ -1,0 +1,26 @@
+<div class="bg-pink-700 rounded-xl overflow-hidden border-2 border-pink-400 card-popup"> 
+  <div class="p-4 animate-shine">
+    <h5 class="text-lg font-semibold text-gray-200" style="font-family: 'Fredoka', sans-serif;">{{ title }}</h5>
+    <p class="text-white">{{ value }}</p>
+  </div>
+</div>
+
+<style>
+.card-popup {
+  opacity: 0;
+  transform: scale(0.9);
+  animation: popup-animation 0.6s ease-out forwards;
+}
+
+
+@keyframes popup-animation {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1); 
+  }
+}
+</style>

@@ -740,3 +740,89 @@ def logout_user(request):
 <h5>Last login session: {{ last_login }}</h5>
 ...
 ```
+
+# ASSIGNMENT 5
+### 1. PRIORITY ORDER OF CSS SELECTORS
+1) Inline Style:
+Highest specificity because it directly applies to an HTML element.
+2) ID Selector:
+IDs have a higher specificity than classes and element selectors.
+3) Classes, Pseudo Classes, and Attributes:
+These selectors have lower specificity than IDs but are higher than element selectors.
+4) Element Selectors and Pseudo-Elements:
+The lowest specificity.
+
+### 2. WHY DOESS RESPONSIVE DESIGN PLAY AN IMPORTANT CONCEPT IN WEB APPLICATION DEVELOPMENT
+Responsive design reduces the amount of data and code that needs to be loaded and eliminates the need to redirect users to device-specific versions of a site. Its primary goal is to ensure that a web application delivers an optimal viewing and interaction experience, no matter the device being used.
+
+APPLICATIONS THAT HAVE IMPLEMENTED RESPONSIVE DESIGN:
+- GitHub: This website offers a consistent experience across every device. 
+- DropBox: his website's layout adapts to the user's device, providing a seamless experience across devices. For example, the mobile app simplifies common tasks, while the desktop experience is improved with improvements to Windows Explorer, macOS Finder, and the taskbar/menu bar
+
+APPLICATIONS THAT HAVE NOT IMPLEMENTED RESPONSIVE DESIGN:
+- Older Government Websites:  Some older government websites, such as certain local administrative portals, have not adopted responsive design. On mobile devices, these websites can be hard to navigate, with small text, misaligned elements, and non-functional features.
+- Legacy Corporate Portals: Some older intranet systems or corporate portals were designed specifically for desktop environments. Without responsive updates, these applications offer a poor experience on mobile devices, often requiring excessive zooming and scrolling.
+
+### 3. DIFFERENCES BETWEEN MARGIN, BORDER, AND PADDING.
+1. Margin: Margin is the outermost space around the element's border and it clears the area outside the border.
+2. Border: Border is the space between an element's padding and the element's content. 
+3. Padding: Clears an area around the content.
+
+HOW TO IMPLEMENT THESE:
+1. Margin:
+```
+.element {
+  margin: 20px;
+}
+
+.element {
+  margin-top: 5px;
+  margin-right: 10px;
+  margin-bottom: 20px;
+  margin-left: 30px;
+}
+
+```
+2. Border:
+```
+.element {
+  border: 5px;
+}
+
+.element {
+  border-top: 5px red;
+  border-right: 5px green;
+  border-bottom: 5px blue;
+  border-left: 5px red;
+}
+```
+3. Padding:
+```
+.element {
+  padding: 40px;
+}
+
+.element {
+  padding-top: 15px red;
+  padding-right: 20px green;
+  padding-bottom: 25px blue;
+  padding-left: 35px red;
+}
+```
+
+### 4. CONCEPTS OF FLEXBOX AND GRID LAYOUT 
+#### FLEXBOX: 
+Flexbox offers greater control over alignment and space distribution between items. Since it's one dimentional, it only deals with columns and rows.
+
+Uses:
+- Navigation Bars: Flexbox is often used to create navigation bars where items need to be evenly spaced or centered.
+- Responsive Layouts: Flexbox makes it easy to rearrange elements as the screen size changes, providing a responsive design.
+
+#### GRID: 
+Grid has two-dimension layout capabilities which allow flexible widths as a unit of length, so it can manage rows and columns at the same time. 
+
+Uses:
+- Dashboards: Grids are great for dashboards with multiple elements like charts, tables, and widgets arranged in a structured layout.
+- Complex Page Layouts: Grid is perfect for laying out entire webpages, where you need both rows and columns to organize content.
+
+### 5. HOW I IMPLEMENTED THE CHECKLISTS 
