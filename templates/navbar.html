@@ -11,7 +11,7 @@
         {% if user.is_authenticated %}
           <div class="text-right mr-4">
             <span class="block text-white-300" style="font-family: 'Fredoka', sans-serif;">Welcome, {{ user.username }}</span>
-            <span class="block text-sm text-white-300" style="font-family: 'Fredoka', sans-serif;">Last Login: {{ last_login }}</span> <!-- Tampilkan Last Login -->
+            <span class="block text-sm text-white-300" style="font-family: 'Fredoka', sans-serif;">Last Login: {{ last_login }}</span> 
           </div>
           <a href="{% url 'main:logout' %}" class="text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
             Logout
@@ -39,7 +39,7 @@
     <div class="pt-2 pb-3 space-y-1 mx-auto">
       {% if user.is_authenticated %}
         <span class="block text-gray-300 px-3 py-2">Welcome, {{ user.username }}</span>
-        <span class="block text-sm text-gray-300 px-3 py-2">Last Login: {{ last_login }}</span> <!-- Tampilkan Last Login pada mobile -->
+        <span class="block text-sm text-gray-300 px-3 py-2">Last Login: {{ last_login }}</span> 
         <a href="{% url 'main:logout' %}" class="block text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300" style="font-family: 'Fredoka', sans-serif;">
           Logout
         </a>

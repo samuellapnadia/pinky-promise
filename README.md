@@ -826,3 +826,519 @@ Uses:
 - Complex Page Layouts: Grid is perfect for laying out entire webpages, where you need both rows and columns to organize content.
 
 ### 5. HOW I IMPLEMENTED THE CHECKLISTS 
+####  Implement functions to delete and edit products.
+1. Create two new functions in views.py to delete and edit products:
+```
+def edit_product(request, id):
+    product = Product.objects.get(pk = id)
+
+    form = ProductEntryForm(request.POST or None, instance=product)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    context = {'form': form}
+    return render(request, "edit_product.html", context)
+
+def delete_product(request, id):
+    product = Product.objects.get(pk = id)
+    product.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))
+```
+
+2. Add some imports to views.py:
+```
+from django.shortcuts import .., reverse
+from django.http import .., HttpResponseRedirect
+
+```
+3. Next, I created a new HTML file named edit_product.html in the main/templates subdirectory. The inside of it is as follows:
+```
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<h1>Edit Mood</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+        <tr>
+            <td></td>
+            <td>
+                <input type="submit" value="Edit Product"/>
+            </td>
+        </tr>
+    </table>
+</form>
+
+{% endblock %}
+
+```
+
+4. Import the function we created to urls.py and add the url path to access the imported function
+```
+from main.views import edit_product, delete_product
+...
+urlpatterns = [
+  ...
+    path('edit-product/<uuid:id>', edit_product, name='edit_product'),
+    path('delete/<uuid:id>', delete_product, name='delete_product'),
+]
+```
+
+5. After that, I accessed the main.html file in the main/templates folder and modify the code so that there's a delete button for each product.
+
+```
+...
+<tr>
+    ...
+    <td>
+        <a href="{% url 'main:edit_product' product_entry.pk %}">
+            <button>
+                Edit
+            </button>
+        </a>
+    </td>
+    <td>
+        <a href="{% url 'main:delete_product' product_entry.pk %}">
+            <button>
+                Delete
+            </button>
+        </a>
+    </td>
+</tr>
+...
+
+```
+
+### 2. Customize the design of the HTML templates that have been created in previous assignments using CSS or a CSS framework (such as Bootstrap, Tailwind, Bulma) with the following conditions:
+1. Add the Tailwind cdn script in the head section of the base.html file in the templates folder in the root directory:
+```
+<head>
+{% block meta %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock meta %}
+<script src="https://cdn.tailwindcss.com">
+</script>
+</head>
+
+```
+Then I added a new folder 'static' with two more folders inside it, 'image' and 'css'. In the 'css' folder, I added a global.css file and filled it with the following code
+```
+.form-style form input, form textarea, form select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 2px solid #bcbcbc;
+    border-radius: 0.375rem;
+}
+.form-style form input:focus, form textarea:focus, form select:focus {
+    outline: none;
+    border-color: #d32f93;
+    box-shadow: 0 0 0 3px #e54fb1;
+}
+
+```
+
+2. I Customized the login page by modifying my login.html to the following:
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Login</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center w-screen bg-pink-100 py-12 px-4 sm:px-6 lg:px-8">
+  <img src="{% static 'image/coquette.png' %}" alt="Ribbon" class="absolute top-0 right-0 w-24 h-24">
+  <img src="{% static 'image/coquette.png' %}" alt="Ribbon" class="absolute top-0 left-0 w-24 h-24">
+  <img src="{% static 'image/mofusanrio.png' %}" alt="Cat" class="absolute top-[150px] right-0 w-16 h-40">
+  <img src="{% static 'image/mofusanriodua.png' %}" alt="Cat" class="absolute top-[150px] left-0 w-16 h-40">
+  <img src="{% static 'image/mofusanrio.png' %}" alt="Cat" class="absolute top-[450px] right-0 w-16 h-40">
+  <img src="{% static 'image/mofusanriodua.png' %}" alt="Cat" class="absolute top-[450px] left-0 w-16 h-40">
+  <img src="{% static 'image/coquette.png' %}" alt="Ribbon" class="absolute bottom-0 left-0 w-24 h-24">
+  <img src="{% static 'image/coquette.png' %}" alt="Ribbon" class="absolute bottom-0 right-0 w-24 h-24">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-black text-3xl font-medium-500 text-gray-900" style="font-family: 'Fredoka', sans-serif;">
+        Welcome back to Pinky Promise, MofuBuddy!
+      </h2>
+    </div>
+    <form class="mt-8 space-y-6" method="POST" action="">
+      {% csrf_token %}
+      <input type="hidden" name="remember" value="true">
+      <div class="rounded-md shadow-sm -space-y-px">
+        <div>
+          <label for="username" class="sr-only">Username</label>
+          <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 focus:z-10 sm:text-sm" placeholder="Username">
+        </div>
+        <div>
+          <label for="password" class="sr-only">Password</label>
+          <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-pink-500 focus:border-pink-500 focus:z-10 sm:text-sm" placeholder="Password">
+        </div>
+      </div>
+
+      <div>
+        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-400 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500" style="font-family: 'Fredoka', sans-serif;">
+          Sign in
+        </button>
+      </div>
+    </form>
+
+    {% if messages %}
+    <div class="mt-4">
+      {% for message in messages %}
+      {% if message.tags == "success" %}
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ message }}</span>
+            </div>
+        {% elif message.tags == "error" %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ message }}</span>
+            </div>
+        {% else %}
+            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
+                <span class="block sm:inline">{{ message }}</span>
+            </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-4" style="font-family: 'Fredoka', sans-serif;">
+      <p class="text-sm text-black" style="font-family: 'Fredoka', sans-serif;">
+        Haven't registered an account? 
+        <a href="{% url 'main:register' %}" class="font-sans text-pink-400 hover:text-pink-800" style="font-family: 'Fredoka', sans-serif;">
+           Become a MofuBuddy now!
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+```
+3. I Customized the register page by modifying my register.html to the following:
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Register</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-pink-100 py-12 px-4 sm:px-6 lg:px-8">
+  <img src="{% static 'image/coquette.png' %}" alt="Ribbon" class="absolute top-0 right-0 w-24 h-24">
+  <img src="{% static 'image/coquette.png' %}" alt="Ribbon" class="absolute top-0 left-0 w-24 h-24">
+  <img src="{% static 'image/coquette.png' %}" alt="Ribbon" class="absolute bottom-0 left-0 w-24 h-24">
+  <img src="{% static 'image/coquette.png' %}" alt="Ribbon" class="absolute bottom-0 right-0 w-24 h-24">
+  <div class="max-w-md w-full space-y-8 form-style">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-medium-500" style="font-family: 'Fredoka', sans-serif;">
+        Create your account here! 
+      </h2>
+    </div>
+    <form class="mt-8 space-y-6" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="remember" value="true">
+      <div class="rounded-md shadow-sm -space-y-px">
+        {% for field in form %}
+          <div class="{% if not forloop.first %}mt-4{% endif %}">
+            <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-black" style="font-family: 'Fredoka', sans-serif;">
+              {{ field.label }}
+            </label>
+            <div class="relative">
+              {{ field }}
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                {% if field.errors %}
+                  <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  </svg>
+                {% endif %}
+              </div>
+            </div>
+            {% if field.errors %}
+              {% for error in field.errors %}
+                <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+              {% endfor %}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <div>
+        <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-400 hover:bg-pink-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"  style="font-family: 'Fredoka', sans-serif;">
+          Register
+        </button>
+      </div>
+    </form>
+
+    {% if messages %}
+    <div class="mt-4">
+      {% for message in messages %}
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <span class="block sm:inline">{{ message }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-4" style="font-family: 'Fredoka', sans-serif;">
+      <p class="text-sm text-black" style="font-family: 'Fredoka', sans-serif;">
+        Already have an account?
+        <a href="{% url 'main:login' %}" class="font-medium text-pink-400 hover:text-pink-600" style="font-family: 'Fredoka', sans-serif;">
+          Login here
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+```
+
+4. I Customized the add product page by modifying my create_product_entry.html to the following:
+```
+{% extends 'base.html' %}
+{% load static %}
+{% block meta %}
+<title>Create Mood</title>
+{% endblock meta %}
+
+{% block content %}
+{% include 'navbar.html' %}
+
+<div class="overflow-x-hidden px-4 md:px-8 pb-8 pt-24 min-h-screen bg-pink-100 flex flex-col"
+     style="background-image: url('{% static 'image/mofuyeah.png' %}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+  <div class="container mx-auto px-4 py-8 mt-16 max-w-xl">
+    <h1 class="text-3xl font-bold text-center mb-8 text-black" style="font-family: 'Fredoka', sans-serif;">Add a New Product Entry!</h1>
+
+  
+    <div class="bg-white shadow-md rounded-lg p-6 form-style">
+      <form method="POST" class="space-y-6">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="flex flex-col">
+            <label for="{{ field.id_for_label }}" class="mb-2 font-semibold text-gray-700">
+              {{ field.label }}
+            </label>
+            <div class="w-full">
+              {{ field }}
+            </div>
+            {% if field.help_text %}
+              <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
+            {% endif %}
+            {% for error in field.errors %}
+              <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endfor %}
+        <div class="flex justify-center mt-6">
+          <button type="submit" class="bg-pink-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 ease-in-out w-full">
+            Create Product Entry
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+```
+
+4. Then, I modified my main.html or the product list page to the following to make it more attractive:
+```
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>PINKY PROMISE</title>
+{% endblock meta %}
+{% block content %}
+{% include 'navbar.html' %}
+<div class="overflow-x-hidden px-4 md:px-8 pb-8 pt-24 min-h-screen bg-pink-100 flex flex-col"
+     style="background-image: url('{% static 'image/mofuyeah.png' %}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+  <div class="p-2 mb-6 relative">
+    <div class="relative grid grid-cols-1 z-30 md:grid-cols-3 gap-8">
+      {% include "card_info.html" with title='Name' value=name %}
+      {% include "card_info.html" with title='Class' value=class %}
+    </div>
+</div>
+    <div class="flex justify-center mb-6">
+        <a href="{% url 'main:create_product_entry' %}" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
+            Add New product Entry
+        </a>
+    </div>
+    
+    {% if not product_entries %}
+    <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+        <img src="{% static 'image/coquette.png' %}" alt="coquette" class="w-32 h-32 mb-4"/>
+        <p class="text-center text-gray-600 mt-4">There is no product data!</p>
+    </div>
+    {% else %}
+    <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full">
+        {% for product_entry in product_entries %}
+            {% include 'card_product.html' with product_entry=product_entry %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}
+```
+This part of the code will display a Ribbon image with a message if there are no product entries, and will display the product cards if there are any products:
+```
+    {% if not product_entries %}
+    <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+        <img src="{% static 'image/coquette.png' %}" alt="coquette" class="w-32 h-32 mb-4"/>
+        <p class="text-center text-gray-600 mt-4">There is no product data!</p>
+    </div>
+    {% else %}
+    <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full">
+        {% for product_entry in product_entries %}
+            {% include 'card_product.html' with product_entry=product_entry %}
+        {% endfor %}
+```
+
+5. Now, I modified the product cards (card_product.html) to the following, and also adding edit and delete buttons:
+
+```
+{% load static %}
+
+<div class="relative break-inside-avoid card-popup cute-bubble-card"> 
+  <div class="absolute top-0 left-0 z-50"> 
+    <img src="{% static 'image/mofu1.png' %}" alt="Ribbon" class="w-10 h-10">
+  </div>
+
+  <div class="relative top-5 bg-pink-100 shadow-md rounded-xl mb-6 break-inside-avoid flex flex-col border-2 border-pink-300 transform rotate-1 hover:rotate-0 transition-transform duration-300">
+    <div class="bg-pink-200 text-gray-800 p-4 rounded-t-xl border-b-2 border-pink-300">
+      <h3 class="font-bold text-xl mb-2" style="font-family: 'Fredoka', sans-serif;">{{ product_entry.name }}</h3>
+      <p class="text-gray-600" style="font-family: 'Fredoka', sans-serif;">{{ product_entry.price }} YEN</p>
+    </div>
+    <div class="p-4">
+      <p class="font-semibold text-lg mb-2" style="font-family: 'Fredoka', sans-serif;">Product Description</p>
+      <p class="text-gray-700 mb-2" style="font-family: 'Fredoka', sans-serif;">{{ product_entry.description }}</p> 
+      <div class="mt-4">
+        <p class="text-gray-700 font-semibold mb-2" style="font-family: 'Fredoka', sans-serif;">Coquetteness Intensity</p>
+        <p class="text-gray-700" style="font-family: 'Fredoka', sans-serif;">{{ product_entry.coquetteness }}</p> 
+      </div>
+    </div>
+  </div>
+  <div class="absolute top-0 -right-4 flex space-x-1">
+    <a href="{% url 'main:edit_product' product_entry.pk %}" class="bg-pink-500 hover:bg-yellow-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+      </svg>
+    </a>
+    <a href="{% url 'main:delete_product' product_entry.pk %}" class="bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+      </svg>
+    </a>
+  </div>
+</div>
+
+<style>
+  .cute-bubble-card {
+    border-radius: 50px; 
+  }
+
+  .cute-bubble-card > div {
+    border-radius: 50px; 
+  }
+
+  .card-popup {
+    opacity: 0;
+    transform: scale(0.9);
+    animation: popup-animation 0.6s ease-out forwards;
+  }
+
+  @keyframes popup-animation {
+    0% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>
+```
+### 3. Create a navigation bar (navbar) for the features in the application that is responsive to different device sizes, especially mobile and desktop. 
+I created a navbar.html file and filled it with the following code:
+```
+{% load static %}
+
+<nav class="bg-pink-400 shadow-lg fixed top-0 left-0 z-40 w-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center">
+          <h1 class="text-2xl font-medium text-center text-white" style="font-family: 'Fredoka', sans-serif;">PINKY PROMISE</h1>
+        <img src="{% static 'image/coquette.png' %}" alt="Ribbon" class="absolute top-0 left-0 w-24 h-24">
+      </div>
+      <div class="hidden md:flex items-center">
+        {% if user.is_authenticated %}
+          <div class="text-right mr-4">
+            <span class="block text-white-300" style="font-family: 'Fredoka', sans-serif;">Welcome, {{ user.username }}</span>
+            <span class="block text-sm text-white-300" style="font-family: 'Fredoka', sans-serif;">Last Login: {{ last_login }}</span> 
+          </div>
+          <a href="{% url 'main:logout' %}" class="text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+            Logout
+          </a>
+        {% else %}
+          <a href="{% url 'main:login' %}" class="text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 mr-2">
+            Login
+          </a>
+          <a href="{% url 'main:register' %}" class="text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300">
+            Register
+          </a>
+        {% endif %}
+      </div>
+      <div class="md:hidden flex items-center">
+        <button class="mobile-menu-button">
+          <svg class="w-6 h-6 text-white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Mobile menu -->
+  <div class="mobile-menu hidden md:hidden  px-4 w-full md:max-w-full">
+    <div class="pt-2 pb-3 space-y-1 mx-auto">
+      {% if user.is_authenticated %}
+        <span class="block text-gray-300 px-3 py-2">Welcome, {{ user.username }}</span>
+        <span class="block text-sm text-gray-300 px-3 py-2">Last Login: {{ last_login }}</span> 
+        <a href="{% url 'main:logout' %}" class="block text-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition duration-300" style="font-family: 'Fredoka', sans-serif;">
+          Logout
+        </a>
+      {% else %}
+        <a href="{% url 'main:login' %}" class="block text-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 mb-2" style="font-family: 'Fredoka', sans-serif;">
+          Login
+        </a>
+        <a href="{% url 'main:register' %}" class="block text-center bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300" style="font-family: 'Fredoka', sans-serif;">
+          Register
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+```
+This part of the code displays the hamburger icon for mobile version:
+```
+<div class="md:hidden flex items-center">
+  <button class="mobile-menu-button">
+    <svg class="w-6 h-6 text-white" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+      <path d="M4 6h16M4 12h16M4 18h16"></path>
+    </svg>
+  </button>
+</div>
+```
