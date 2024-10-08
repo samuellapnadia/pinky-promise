@@ -1342,3 +1342,312 @@ This part of the code displays the hamburger icon for mobile version:
   </button>
 </div>
 ```
+
+# ASSIGNMENT 6
+## 1. Benefits of using JavaScript in developing web applications!
+Javascript offers client-side interactivity and a thriving community for support. Javascript is also versatile for both client and server-side development, has a rich ecosystem of libraries and frameworks, supports asynchronous programming (AJAX), offers cross-browser compatibility, and is known for its relatively easy learning curve. 
+
+## 2. Why do we need to use await when we call fetch() and would happen if we don't use await.
+Using await with fetch() allows us to pause the execution of a function until the promise returned by fetch() resolves. The await keyword is what causes asynchronousness. If there is no await, then the statements are executed synchronously.
+
+### 3.Why do we need to use the csrf_exempt decorator on the view used for AJAX POST
+The csrf_exempt decorator is used to bypass Django's default Cross-Site Request Forgery (CSRF) protection. CSRF tokens ensure that requests made to your application are legitimate and not forged by a third-party site.
+
+### 4. Why can't user input sanitization be done just in the front-end?
+User input sanitization should not be done exclusively on the front-end because front-end code can be manipulated by users or attackers. Although client-side sanitization improves the user experience, it is not a security measure.
+
+### 5. How I implement the checklists. 
+#### Modify the previously created assignment 5 to use AJAX.
+##### AJAX GET
+###### Modify the codes in data cards to able to use AJAX GET.
+###### Retrieve data using AJAX GET. Make sure that the datas retrieved are only the datas belonging to the logged in user.
+1. To do these, we need to display the mood entry data with fetch() API. We start by removing these two lines in views.py
+
+```
+product_entries = Product.objects.filter(user=request.user)
+...
+'product_entries': product_entries , 
+```
+2. Then I modified the show_json and show_xml functions to the following:
+
+```
+def show_xml(request):
+    data = Product.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json(request):
+    data = Product.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+```
+
+3. Then I removed this part from my main.html
+```
+    {% if not product_entries %}
+    <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+        <img src="{% static 'image/coquette.png' %}" alt="coquette" class="w-32 h-32 mb-4"/>
+        <p class="text-center text-gray-600 mt-4">There is no product data!</p>
+    </div>
+    {% else %}
+    <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full">
+        {% for product_entry in product_entries %}
+            {% include 'card_product.html' with product_entry=product_entry %}
+        {% endfor %}
+```
+And replaced it with:
+```
+   <div id="product_entry_cards"></div>
+```
+
+4. Then, I created a few new functions:
+```
+<script>
+  async function getProductEntries(){
+    return fetch("{% url 'main:show_json' %}").then((res) => res.json())
+  }
+
+  async function refreshProductEntries() {
+    document.getElementById("product_entry_cards").innerHTML = "";
+    document.getElementById("product_entry_cards").className = "";
+    const productEntries = await getProductEntries();
+    let htmlString = "";
+    let classNameString = "";
+
+    if (productEntries.length === 0) {
+      classNameString = "flex flex-col items-center justify-center min-h-[24rem] p-6";
+      htmlString = `
+        <div class="flex flex-col items-center justify-center min-h-[24rem] p-6">
+          <img src="{% static 'image/sedih-banget.png' %}" alt="Sad face" class="w-32 h-32 mb-4"/>
+          <p class="text-center text-gray-600 mt-4">No product data on the mental health tracker yet.</p>
+        </div>
+      `;
+    } else {
+      classNameString = "columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 w-full";
+      productEntries.forEach((item) => {
+        const name = DOMPurify.sanitize(item.fields.name);
+        const description = DOMPurify.sanitize(item.fields.description);
+        const coquetteness = DOMPurify.sanitize(item.fields.coquetteness);
+
+        htmlString += `
+          <div class="relative break-inside-avoid">
+            <div class="relative top-5 bg-pink-100 shadow-md rounded-lg mb-6 break-inside-avoid flex flex-col border-2 border-pink-300 transform rotate-1 hover:rotate-0 transition-transform duration-300">
+              <div class="bg-pink-200 text-gray-800 p-4 rounded-t-lg border-b-2 border-pink-300">
+                <h3 class="font-bold text-xl mb-2">${name}</h3>
+                <p class="text-gray-600">${item.fields.price} YEN</p>
+              </div>
+              <div class="p-4">
+                <p class="font-semibold text-lg mb-2">Description</p>
+                <p class="text-gray-700 mb-2">${description}</p> 
+                <div class="mt-4">
+                  <p class="text-gray-700 font-semibold mb-2">Coquetteness</p>
+                  <p class="text-gray-700">${coquetteness}</p> 
+                </div>
+              </div>
+            </div>
+            <div class="absolute top-0 left-0 z-50"> 
+              <img src="{% static 'image/mofu1.png' %}" alt="Mofusand Image" class="w-10 h-10">
+            </div>
+            <div class="absolute top-0 -right-4 flex space-x-1">
+              <a href="/edit-product/${item.pk}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-full p-2 transition duration-300 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-9 w-9" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                </svg>
+              </a>
+              <a href="/delete/${item.pk}" class="bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition duration-300 shadow-md flex items-center justify-center">
+                <span class="text-white font-bold text-lg">X</span>
+              </a>
+            </div>
+          </div>
+        `;
+      });
+    }
+    document.getElementById("product_entry_cards").className = classNameString;
+    document.getElementById("product_entry_cards").innerHTML = htmlString;
+  }
+
+  refreshProductEntries();
+</script>
+```
+getProductEntries uses fetch() API to fetch the JSON data asynchronously. refreshProductEntries is used to refresh moods data asynchronously.
+
+
+##### AJAX POST
+######  Create a button that opens a modal with a form for adding a mood entry.
+1. First, I added the following to my main.html. This will implement the modal (Tailwind).
+```
+  <div id="crudModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-50 w-full flex items-center justify-center bg-gray-800 bg-opacity-50 overflow-x-hidden overflow-y-auto transition-opacity duration-300 ease-out">
+    <div id="crudModalContent" class="relative bg-white rounded-lg shadow-lg w-5/6 sm:w-3/4 md:w-1/2 lg:w-1/3 mx-4 sm:mx-0 transform scale-95 opacity-0 transition-transform transition-opacity duration-300 ease-out">
+
+      <div class="flex items-center justify-between p-4 border-b rounded-t">
+        <h3 class="text-xl font-semibold text-gray-900">
+          Add New Product Entry
+        </h3>
+        <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" id="closeModalBtn">
+          <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+
+```
+2. Then I added the following JavaScript functions:
+```
+<script>
+...
+
+  const modal = document.getElementById('crudModal');
+  const modalContent = document.getElementById('crudModalContent');
+
+  function showModal() {
+    modal.classList.remove('hidden'); 
+    setTimeout(() => {
+      modalContent.classList.remove('opacity-0', 'scale-95');
+      modalContent.classList.add('opacity-100', 'scale-100');
+    }, 50); 
+  }
+
+  function hideModal() {
+    modalContent.classList.remove('opacity-100', 'scale-100');
+    modalContent.classList.add('opacity-0', 'scale-95');
+
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 150); 
+  }
+
+  document.getElementById("cancelButton").addEventListener("click", hideModal);
+  document.getElementById("closeModalBtn").addEventListener("click", hideModal);
+  document.getElementById("productEntryForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    addProductEntry();
+  });
+</script>
+```
+3. Then, I modified the add product entry button and add another button to perform the addition of data with AJAX. 
+```
+  <div class="flex justify-center mb-6">
+    <a href="{% url 'main:create_product_entry' %}" class="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105">
+      Add New product Entry
+    </a>
+    <button data-modal-target="crudModal" data-modal-toggle="crudModal" class="btn bg-pink-700 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105" onclick="showModal();">
+      Add New Product Entry by AJAX
+    </button>
+  </div>
+```
+######  Create a new view function to add a new mood entry to the database:
+1. Firstly, I created a function to add a mood with AJAX. I started by adding two imports to views.py:
+```
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+```
+
+2. Then, I made a new function in the views.py file with the name add_product_entry_ajax that receives the request parameter. 
+```
+@csrf_exempt
+@require_POST
+def add_product_entry_ajax(request):
+    name = strip_tags(request.POST.get("name"))
+    description = strip_tags(request.POST.get("description"))
+    coquetteness = strip_tags(request.POST.get("coquetteness"))
+    price = request.POST.get("price")
+    user = request.user
+
+    new_product = Product(
+        name=name, price=price,
+        coquetteness=coquetteness, description=description,
+        user=user
+    )
+    new_product.save()
+
+    return HttpResponse(b"CREATED", status=201)
+```
+
+
+###### Create a /create-ajax/ path that routes to the new view function you created
+I did the routing as usual for the above function by modifying my urls.py by adding these:
+```
+from main.views import ..., add_product_entry_ajax
+...
+urlpatterns = [
+    ...
+    path('create-product-entry-ajax', add_product_entry_ajax, name='add_product_entry_ajax'),
+]
+```
+
+###### Connect the form you created inside the modal to the /create-ajax/ path
+###### Perform asynchronous refresh on the main page to display the latest item list without reloading the entire main page.
+1. I started by adding a new function addProductEntry
+```
+<script>
+  function addProductEntry() {
+    fetch("{% url 'main:add_product_entry_ajax' %}", {
+      method: "POST",
+      body: new FormData(document.querySelector('#productEntryForm')),
+    })
+    .then(response => refreshProductEntries())
+  
+    document.getElementById("productEntryForm").reset();  
+    hideModal();  
+  
+    return false;
+  }
+  ...
+</script>
+```
+2. Then I added an event listener to the form in modal to run the addProductEntry() function 
+```
+<script>
+...
+  document.getElementById("productEntryForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    addProductEntry();
+  });
+</script>
+```
+##### Additional: Protecting the app from Cross Site Scripting (XSS)
+1. Firstly, I started by adding strip_tags to clean up the new data. I added this import to my views.py and urls.py file
+```
+from django.utils.html import strip_tags
+```
+2. Then I modified by add_product_entry_ajax function to add the strip tags 
+```
+def add_product_entry_ajax(request):
+    name = strip_tags(request.POST.get("name"))
+    description = strip_tags(request.POST.get("description"))
+    coquetteness = strip_tags(request.POST.get("coquetteness"))
+...
+```
+3. Then I added a few methods to the forms.py file
+```
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        return strip_tags(name)
+
+    def clean_description(self):
+        description = self.cleaned_data.get('description')
+        return strip_tags(description)
+
+    def clean_coquetteness(self): 
+        coquetteness = self.cleaned_data.get('coquetteness')
+        return strip_tags(coquetteness)
+```
+
+4. Then, to sanitize the data with DOMPurify, firstly I added this code to the meta block
+```
+{% block meta %}
+...
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+...
+{% endblock meta %}
+```
+
+5. Lastly, I added the following code to the refreshProductEntries function
+```
+...
+      productEntries.forEach((item) => {
+        const name = DOMPurify.sanitize(item.fields.name);
+        const description = DOMPurify.sanitize(item.fields.description);
+        const coquetteness = DOMPurify.sanitize(item.fields.coquetteness);
+...
+```
