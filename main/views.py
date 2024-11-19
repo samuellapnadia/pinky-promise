@@ -120,3 +120,56 @@ def add_product_entry_ajax(request):
     new_product.save()
 
     return HttpResponse(b"CREATED", status=201)
+
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.http import JsonResponse
+from .models import Product  
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            new_product = Product.objects.create(
+                user=request.user,
+                name=data["name"], 
+                description=data["description"],
+                price=int(data["price"]),
+                coquetteness=data["coquetteness"]
+            )
+
+
+            new_product.save()
+
+            return JsonResponse({"status": "success"}, status=200)
+        except KeyError as e:
+            return JsonResponse(
+                {"status": "error", "message": f"Missing key: {str(e)}"},
+                status=400
+            )
+        except Exception as e:
+            return JsonResponse(
+                {"status": "error", "message": str(e)},
+                status=500
+            )
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+    
+@csrf_exempt
+def fetch_products(request):
+    if request.method == "GET":
+        user = request.user
+        products = Product.objects.filter(user=user)  
+        product_list = [
+            {
+                "id": product.id,
+                "name": product.name,
+                "description": product.description,
+                "price": product.price,
+                "coquetteness": product.coquetteness,
+            }
+            for product in products
+        ]
+        return JsonResponse(product_list, safe=False)
+
